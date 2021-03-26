@@ -8,11 +8,11 @@ public class ApiForUsers {
     public Response getUsersListResponse = null;
     private String basePath = "https://gorest.co.in/public-api/";
 
-    public Response createUser() {
-        return RestAssured.given().contentType("application/json").accept("application/json")
-                .header("Authorization", "Bearer ACCESS-TOKEN")
-                .body(basePath + "users").post().then().log().all().extract().response();
-    }
+//    public Response createUser() {
+//        return RestAssured.given().contentType("application/json").accept("application/json")
+//                .header("Authorization", "Bearer ACCESS-TOKEN")
+//                .body(basePath + "users").post().then().log().all().extract().response();
+//    }
 
     public Response getUsersList() {
         return RestAssured.given().contentType("application/json").accept("application/json")

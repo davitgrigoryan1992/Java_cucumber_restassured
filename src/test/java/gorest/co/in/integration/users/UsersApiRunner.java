@@ -11,7 +11,9 @@ import io.cucumber.junit.CucumberOptions.SnippetType;
         glue ={"gorest.co.in.integration.users"},
         monochrome = true,
         snippets = SnippetType.CAMELCASE,
-        tags = "@user" )
+        tags = {"@user"}
+//        , tags = {"@scenario1"}
+)
 
 public class UsersApiRunner {
 
