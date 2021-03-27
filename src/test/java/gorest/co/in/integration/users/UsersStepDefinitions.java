@@ -96,9 +96,23 @@ public class UsersStepDefinitions {
         helper.postCreateUserRequest.put("status", status);
     }
 
+    @And("^we update existing user details to: Name - \"([^\"]*)\", Mail - \"([^\"]*)\", Gender - \"([^\"]*)\", Status - \"([^\"]*)\"$")
+    public void we_update_following_user_details_request_body(String newName, String newMail, String newGender, String newStatus) {
+        helper.putUserRequest = new JSONObject();
+        helper.putUserRequest.put("name", newName);
+        helper.putUserRequest.put("email", getRandomName()+newMail);
+        helper.putUserRequest.put("gender", newGender);
+        helper.putUserRequest.put("status", newStatus);
+    }
+
     @And("^we enter valid access token for Authorization$")
     public void we_enter_valid_access_token_for_Authorization() {
         helper.authorizationBearer = "Bearer 7d35e09d63a2d4631eadbc118350c1482ad87390960fa1e965c0bea0022d58e1";
+    }
+
+    @And("^we enter invalid access token for Authorization$")
+    public void we_enter_invalid_access_token_for_Authorization() {
+        helper.authorizationBearer = "Bearer invalid_token";
     }
 
     @When("^we run POST new user request$")
@@ -111,7 +125,15 @@ public class UsersStepDefinitions {
         Assert.assertEquals(
                 "Expected status code is:" + statusCode + " for Post user request. But Response is "
                         + helper.postCreateUserResponse.getBody().asString(),
-                statusCode, helper.postCreateUserResponse.getStatusCode());
+                statusCode, helper.postCreateUserResponse.getBody().jsonPath().get("code"));
+    }
+
+    @And("^assert that response status code is (\\d+) for PUT user request$")
+    public void status_code_is_for_put_user(int statusCode) {
+        Assert.assertEquals(
+                "Expected status code is:" + statusCode + " for PUT user request. But Response is "
+                        + helper.putUserResponse.getBody().asString(),
+                statusCode, helper.putUserResponse.getBody().jsonPath().get("code"));
     }
 
     @And("^assert that the Location header contains the URL pointing to the newly created resource$")
@@ -131,12 +153,17 @@ public class UsersStepDefinitions {
         helper.getNewUserDetailsResponse = helper.getNewUserDetails(newUserId);
     }
 
+    @And("^we run GET new created user request with invalid userId$")
+    public void we_run_GET_new_created_user_request_invalid_userid() {
+        helper.getNewUserDetailsResponse = helper.getNewUserDetails(newUserId+"123");
+    }
+
     @And("^assert that response status code is (\\d+) for Get new user request$")
     public void status_code_is_for_get_new_user(int statusCode) {
         Assert.assertEquals(
                 "Expected status code is:" + statusCode + " for Get New user request. But Response is "
                         + helper.getNewUserDetailsResponse.getBody().asString(),
-                statusCode, helper.getNewUserDetailsResponse.getStatusCode());
+                statusCode, helper.getNewUserDetailsResponse.getBody().jsonPath().get("code"));
     }
 
     @Then("^assert that created user has details: Name - \"([^\"]*)\", Mail - \"([^\"]*)\", Gender - \"([^\"]*)\", Status - \"([^\"]*)\"$")
@@ -172,7 +199,7 @@ public class UsersStepDefinitions {
         Assert.assertEquals(
                 "Expected status code is:" + statusCode + " for Delete New user request. But Response is "
                         + helper.deleteNewUserResponse.getBody().asString(),
-                statusCode, helper.deleteNewUserResponse.getStatusCode());
+                statusCode, helper.deleteNewUserResponse.getBody().jsonPath().get("code"));
     }
 
     @And("^we assert that user is no longer exist$")
@@ -181,6 +208,97 @@ public class UsersStepDefinitions {
 
         Assert.assertEquals("User is not deleted!!!",
                 helper.getNewUserDetailsResponse.getBody().jsonPath().get("data.message"), "Resource not found");
+    }
+
+    @Given("^user with name \"([^\"]*)\" is created in users list$")
+    public void user_with_name_is_created_in_users_list(String name) {
+        helper.postCreateUserRequest = new JSONObject();
+        helper.postCreateUserRequest.put("name", name);
+        helper.postCreateUserRequest.put("email", getRandomName()+"@example.com");
+        helper.postCreateUserRequest.put("gender", "Male");
+        helper.postCreateUserRequest.put("status", "Active");
+
+        // Crete new User
+        helper.postCreateUserResponse = helper.postNewUser(helper.postCreateUserRequest.toString());
+
+        Assert.assertEquals(
+                "Expected status code is:" + 200 + " for Post user request. But Response is "
+                        + helper.postCreateUserResponse.getBody().asString(),
+                200, helper.postCreateUserResponse.getStatusCode());
+
+        newUserId = helper.postCreateUserResponse.getBody().jsonPath().get("data.id").toString();
+    }
+
+    @And("^we enter \"([^\"]*)\" name for PATCH user request$")
+    public void we_enter_name_for_patch_user_request(String newName) {
+        helper.patchUserRequest = new JSONObject();
+        helper.patchUserRequest.put("name", newName);
+    }
+
+    @And("^we enter user's \"([^\"]*)\" status for PATCH user request$")
+    public void we_enter_status_for_patch_user_request(String status) {
+        helper.patchUserRequest = new JSONObject();
+        helper.patchUserRequest.put("status", status);
+    }
+
+    @And("^we run PUT user request$")
+    public void we_run_put_user_request() {
+        helper.putUserResponse = helper.putUser(helper.putUserRequest.toString(), newUserId);
+    }
+
+    @When("^we run PATCH user request$")
+    public void we_run_patch_user_request() {
+        helper.patchUserResponse = helper.patchUser(helper.patchUserRequest.toString(), newUserId);
+    }
+
+    @Then("^assert that response status code is (\\d+) for PATCH user request$")
+    public void assert_that_response_status_is_patch_user_request(int statusCode) {
+        Assert.assertEquals(
+                "Expected status code is:" + statusCode + " for Patch user request. But Response is "
+                        + helper.patchUserResponse.getBody().asString(),
+                statusCode, helper.patchUserResponse.getBody().jsonPath().get("code"));
+    }
+
+    @And("^assert that user name has updated to \"([^\"]*)\"$")
+    public void assert_that_updated_user_name(String newName) {
+        Assert.assertEquals("Returned updated Users name is wrong! - Returned updated User name is "
+                        + helper.getNewUserDetailsResponse.getBody().jsonPath().get("data.name") + ", but should be " + newName,
+                helper.getNewUserDetailsResponse.getBody().jsonPath().get("data.name"), newName);
+    }
+
+    @Then("^assert that user status has updated to \"([^\"]*)\"$")
+    public void assert_that_updated_user_status(String status) {
+        Assert.assertEquals("Returned updated Users status is wrong! - Returned updated User status is "
+                        + helper.getNewUserDetailsResponse.getBody().jsonPath().get("data.status") + ", but should be " + status,
+                helper.getNewUserDetailsResponse.getBody().jsonPath().get("data.status"), status);
+    }
+
+    @And("^assert that error message is \"([^\"]*)\" \"([^\"]*)\"$")
+    public void assert_post_user_with_invalid_data(String field, String message) {
+        if (!field.equals("")) {
+            Assert.assertEquals("Returned error message is not correct!",
+                    helper.postCreateUserResponse.getBody().jsonPath().get("data.field").toString(), "[" + field + "]");
+            Assert.assertEquals("Returned error message is not correct!",
+                    helper.postCreateUserResponse.getBody().jsonPath().get("data.message").toString(), "[" + message + "]");
+        } else
+            Assert.assertEquals("Returned error message is not correct!",
+                    helper.postCreateUserResponse.getBody().jsonPath().get("data.message").toString(), message);
+    }
+
+    @And("^assert that error message is \"([^\"]*)\" for Get request$")
+    public void assert_post_user_with_invalid_data_get_request(String message) {
+            Assert.assertEquals("Returned error message is not correct!",
+                    helper.getNewUserDetailsResponse.getBody().jsonPath().get("data.message").toString(), message);
+    }
+
+    @And("^we enter \"([^\"]*)\" as Content-Type$")
+    public void we_set_content_type(String content_type) {
+        helper.contentType = content_type;
+    }
+
+    @And("^we provide extra parameter in the body$")
+    public void we_provide_extra_parameter() {
+        helper.postCreateUserRequest.put("extra", "extra_parameter");
     }
 
     private String getRandomName() {
