@@ -14,7 +14,7 @@ import java.util.Random;
 public class UsersStepDefinitions {
 
     private ApiForUsers helper;
-    StoreTestDataMySQL storeData;
+    private StoreTestDataMySQL storeData;
     private String newUserId;
 
     public UsersStepDefinitions(ApiForUsers helper) {

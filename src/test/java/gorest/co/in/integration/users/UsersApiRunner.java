@@ -12,7 +12,7 @@ import io.cucumber.junit.CucumberOptions.SnippetType;
         monochrome = true,
         snippets = SnippetType.CAMELCASE,
         tags = {"@user"}
-//        , tags = {"@scenario1"}
+//        tags = {"@scenario2"}
 )
 
 public class UsersApiRunner {
