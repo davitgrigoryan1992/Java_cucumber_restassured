@@ -1,3 +1,5 @@
 .idea
 target
 Gorest-ApiTest.iml
+.allure
+allure-results

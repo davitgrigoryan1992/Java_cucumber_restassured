@@ -7,12 +7,14 @@ import io.cucumber.junit.CucumberOptions.SnippetType;
 
 
 @RunWith(Cucumber.class)
-@CucumberOptions(features= "src/test/java/resources/features/users/UsersAPI.feature",
+@CucumberOptions(
+        plugin = {"json:target/cucumber-reports/cucumber.json"},
+        features= "src/test/java/resources/features/users/UsersAPI.feature",
         glue ={"gorest.co.in.integration.users"},
         monochrome = true,
         snippets = SnippetType.CAMELCASE,
         tags = {"@user"}
-//        tags = {"@scenario2"}
+//        tags = {"@scenario1"}
 )
 
 public class UsersApiRunner {

@@ -21,9 +21,9 @@ public class UsersStepDefinitions {
         this.helper = helper;
     }
 
-    @Given("^gorest.co.in server is working$")
-    public void server_is_working() {
-        System.out.println("We hope gorest.co.in server is working! And Test is starting......");
+    @Given("^gorest.co.in server is working. Scenario N(\\d+)$")
+    public void server_is_working(int scenarioNumber) {
+        System.out.println("We hope gorest.co.in server is working! And Scenario N" + scenarioNumber + " is starting......");
     }
 
     @And("^we run GET users list request$")
