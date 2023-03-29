@@ -3,7 +3,7 @@ The framework implemented to test https://gorest.co.in/ Users Rest APIs.
 
 ## Setup:
 * Used Java 1.8 SDK for Maven project 
-* Run `git clone https://github.com/davitgrigoryan1992/Trial_task_for_Disco.git`
+* Run `git clone https://github.com/davitgrigoryan1992/Trial_task.git`
 * install `cucumber.js` plugin from IDE settings
 * install MySQL Database Service, create database table with name`usersdb` and `users` inside it.
 
